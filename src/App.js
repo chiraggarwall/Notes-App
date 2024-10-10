@@ -1,50 +1,40 @@
-import React, { useState } from "react";
-import "./NotesApp.css"; // Importing the basic CSS
-import Popup from "./Popup";
-import Show from "./Show";
-
-const NotesApp = () => {
-  const [notes, setNotes] = useState(
-    JSON.parse(localStorage.getItem("notes")) || []
-  );
-
+import React, { useEffect, useState } from "react";
+import PopUp from "./PopUp";
+import AddButton from "./AddButton";
+import Notes from "./Notes";
+const App = () => {
+  const [notes, setNotes] = useState([]);
   const [isPopupOpen, setIsPopupOpen] = useState(false);
+  useEffect(() => {
+    const savedNotes = JSON.parse(localStorage.getItem("notes"));
+    setNotes(savedNotes);
+  }, []);
 
-  const handlePopupToggle = (isOpen) => {
-    setIsPopupOpen(isOpen);
-  };
-
-  const updatedNotes = (note) => {
-    let newNote = [...notes, note];
-    setNotes(newNote);
-    localStorage.setItem("notes", JSON.stringify(newNote));
-  };
-
-  const handleAddNotesClick = (e) => {
-    e.preventDefault();
-    setIsPopupOpen(true);
+  const handleAddNote = (note) => {
+    const savedNotes = JSON.parse(localStorage.getItem("notes"));
+    setNotes([...savedNotes, note]);
   };
 
   return (
     <>
-      <button onClick={handleAddNotesClick}>Add +</button>
-      {isPopupOpen && (
-        <Popup updatedNotes={updatedNotes} onClose={handlePopupToggle} />
-      )}
+      <AddButton
+        onOpen={() => {
+          setIsPopupOpen(true);
 
-      {notes.map((note, index) => {
-        return (
-          <>
-            <Show key={note.id} onClose={handlePopupToggle} note={note} />
-          </>
-        );
-      })}
+          console.log("fgh", isPopupOpen);
+        }}
+      />
+      {isPopupOpen && (
+        <PopUp
+          handleAddNote={handleAddNote}
+          onClose={() => {
+            setIsPopupOpen(false);
+          }}
+        />
+      )}
+      <Notes notes={notes} />
     </>
   );
 };
 
-export default NotesApp;
-
-//notes
-//modal,notes
-//     ,note
+export default App;
